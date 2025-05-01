@@ -3,21 +3,19 @@ import subprocess
 from importlib import import_module
 import time
 import sys
+from inspect import cleandoc
 
 # Get the message to display to the user
 def get_editor_message(editor: str) -> str:
-    if editor == "cursor":
-        return """
-- Ready!
-- Open Cursor on your laptop and open the command prompt
-- Select: 'Remote-Tunnels: Connect to Tunnel' to connect to colab
-""".strip()
-    else:  # vscode
-        return """
-- Ready!
-- Open VSCode on your laptop and open the command prompt
-- Select: 'Remote-Tunnels: Connect to Tunnel' to connect to colab
-""".strip()
+    editor_names = {"cusor": "Cursor"}
+    editor_name = editor_names.get(editor, "VSCode")
+    return cleandoc(
+        f"""
+    - Ready!
+    - Open {editor_name} on your laptop and open the command prompt
+    - Select: 'Remote-Tunnels: Connect to Tunnel' to connect to colab
+    """
+    ).strip()
 
 
 def start_tunnel(editor: str) -> None:
