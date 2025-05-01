@@ -29,8 +29,9 @@ colabconnect()
 
 1. After running the code, copy the given code, click the GitHub link and paste the code.
 <p align="center">
-<img width="965" alt="image" src="https://user-images.githubusercontent.com/8587189/232768841-fbd2e1bd-91d1-49ac-989e-277e50604209.png">
+<img src="https://github.com/user-attachments/assets/c1e0046c-0020-4b3d-a7ec-9b9450e38bc5">
 </p>
+
 
 2. Paste your unique code on the github link and press "Continue".
 <p align="center">
