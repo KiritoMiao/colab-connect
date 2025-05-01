@@ -2,7 +2,7 @@
 
 # colab-connect
 
-Access Google Colab directly from your local VS Code editor using [remote tunnels](https://code.visualstudio.com/docs/remote/tunnels).
+Access Google Colab directly from your local VS Code or Cursor editor using [remote tunnels](https://code.visualstudio.com/docs/remote/tunnels).
 
 https://user-images.githubusercontent.com/8587189/232783372-8f2a5f83-1e57-42f0-8740-4b7e5901b561.mp4
 
@@ -12,7 +12,7 @@ https://user-images.githubusercontent.com/8587189/232783372-8f2a5f83-1e57-42f0-8
 ## Usage
 You can make a copy of this [notebook](https://colab.research.google.com/drive/1VAlrgB4IpBazkQRrZtSPjeTNR3P27FwQ?usp=sharing) to get started.
 
-On Google Colab, first install the library and the run the code.
+On Google Colab, first install the library and then run the code.
 ```shell
 !pip install -U git+https://github.com/amitness/colab-connect.git
 ```
@@ -20,7 +20,11 @@ On Google Colab, first install the library and the run the code.
 ```python
 from colabconnect import colabconnect
 
+# Default: VS Code
 colabconnect()
+
+# For Cursor editor
+# colabconnect(editor="cursor")
 ```
 
 1. After running the code, copy the given code, click the GitHub link and paste the code.

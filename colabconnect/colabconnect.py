@@ -4,16 +4,28 @@ from importlib import import_module
 import time
 import sys
 
-
-message = """
+# Get the message to display to the user
+def get_editor_message(editor: str) -> str:
+    if editor == "cursor":
+        return """
+- Ready!
+- Open Cursor on your laptop and open the command prompt
+- Select: 'Remote-Tunnels: Connect to Tunnel' to connect to colab
+""".strip()
+    else:  # vscode
+        return """
 - Ready!
 - Open VSCode on your laptop and open the command prompt
 - Select: 'Remote-Tunnels: Connect to Tunnel' to connect to colab
 """.strip()
 
 
-def start_tunnel() -> None:
-    command = "./code tunnel --accept-server-license-terms --name colab-connect"
+def start_tunnel(editor: str) -> None:
+    if editor == "cursor":
+        command = "./cursor tunnel --accept-server-license-terms --name colab-connect"
+    else:  # vscode
+        command = "./code tunnel --accept-server-license-terms --name colab-connect"
+    
     p = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -27,7 +39,7 @@ def start_tunnel() -> None:
         if "Open this link" in line:
             print("Starting the tunnel")
             time.sleep(5)
-            print(message)
+            print(get_editor_message(editor))
             print("Logs:")
             show_outputs = True
             line = ""
@@ -35,8 +47,11 @@ def start_tunnel() -> None:
             break
     return None
 
-def login_tunnel(provider: str) -> None:
-    command = f"./code tunnel user login --provider {provider}"
+def login_tunnel(editor: str, provider: str) -> None:
+    if editor == "cursor":
+        command = f"./cursor tunnel user login --provider {provider}"
+    else:  # vscode
+        command = f"./code tunnel user login --provider {provider}"
     p = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -55,7 +70,10 @@ def run(command: str) -> None:
 def is_colab():
     return 'google.colab' in sys.modules
 
-def colabconnect(provider: str = "github") -> None:
+def colabconnect(editor: str = "vscode", provider: str = "github") -> None:
+    if editor not in ["vscode", "cursor"]:
+        raise ValueError("editor must be either 'vscode' or 'cursor'")
+        
     if is_colab():
         print("Mounting Google Drive...")
         drive = import_module("google.colab.drive")
@@ -73,13 +91,19 @@ def colabconnect(provider: str = "github") -> None:
     run("pip3 install -U ipykernel")
     run("apt install htop -y")
 
-    print("Installing vscode-cli...")
-    run(
-        "curl -Lk https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64 --output vscode_cli.tar.gz"
-    )
-    run("tar -xf vscode_cli.tar.gz")
-
+    if editor == "cursor":
+        print("Installing cursor-cli...")
+        run(
+            "curl -Lk https://api2.cursor.sh/updates/download-latest?os=cli-alpine-x64 --output cursor_cli.tar.gz"
+        )
+        run("tar -xf cursor_cli.tar.gz")
+    else:  # vscode
+        print("Installing vscode-cli...")
+        run(
+            "curl -Lk https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64 --output vscode_cli.tar.gz"
+        )
+        run("tar -xf vscode_cli.tar.gz")
     print("Starting the tunnel")
     if provider != 'github':
-        login_tunnel(provider)
-    start_tunnel()
+        login_tunnel(editor, provider)
+    start_tunnel(editor)
