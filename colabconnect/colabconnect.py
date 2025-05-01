@@ -5,6 +5,7 @@ import time
 import sys
 from inspect import cleandoc
 
+
 # Get the message to display to the user
 def get_editor_message(editor: str) -> str:
     editor_names = {"cusor": "Cursor"}
@@ -23,7 +24,7 @@ def start_tunnel(editor: str) -> None:
         command = "./cursor tunnel --accept-server-license-terms --name colab-connect"
     else:  # vscode
         command = "./code tunnel --accept-server-license-terms --name colab-connect"
-    
+
     p = subprocess.Popen(
         command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
     )
@@ -45,6 +46,7 @@ def start_tunnel(editor: str) -> None:
             break
     return None
 
+
 def login_tunnel(editor: str, provider: str) -> None:
     if editor == "cursor":
         command = f"./cursor tunnel user login --provider {provider}"
@@ -60,29 +62,32 @@ def login_tunnel(editor: str, provider: str) -> None:
         print(line.strip())
     return None
 
+
 def run(command: str) -> None:
     process = subprocess.run(command.split())
     if process.returncode == 0:
         print(f"Ran: {command}")
 
+
 def is_colab():
-    return 'google.colab' in sys.modules
+    return "google.colab" in sys.modules
+
 
 def colabconnect(editor: str = "vscode", provider: str = "github") -> None:
     if editor not in ["vscode", "cursor"]:
         raise ValueError("editor must be either 'vscode' or 'cursor'")
-        
+
     if is_colab():
         print("Mounting Google Drive...")
         drive = import_module("google.colab.drive")
         drive.mount("/content/drive")
-    
+
         # Create a folder on drive to store all the code files
-        drive_folder = '/content/drive/MyDrive/colab/'
+        drive_folder = "/content/drive/MyDrive/colab/"
         Path(drive_folder).mkdir(parents=True, exist_ok=True)
-    
+
         # Make a /colab path to easily access the folder
-        run(f'ln -s {drive_folder} /')
+        run(f"ln -s {drive_folder} /")
 
     print("Installing python libraries...")
     run("pip3 install --user flake8 black ipywidgets twine")
@@ -102,6 +107,6 @@ def colabconnect(editor: str = "vscode", provider: str = "github") -> None:
         )
         run("tar -xf vscode_cli.tar.gz")
     print("Starting the tunnel")
-    if provider != 'github':
+    if provider != "github":
         login_tunnel(editor, provider)
     start_tunnel(editor)
