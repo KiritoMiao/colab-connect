@@ -15,7 +15,7 @@ You can make a copy of this [notebook](https://colab.research.google.com/drive/1
 On Google Colab, install `uv` and then install the library:
 ```shell
 !curl -LsSf https://astral.sh/uv/install.sh | sh
-!~/.local/bin/uv pip install --system -U git+https://github.com/amitness/colab-connect.git
+!~/.local/bin/uv pip install --system -U git+https://github.com/KiritoMiao/colab-connect.git
 ```
 
 ```python
