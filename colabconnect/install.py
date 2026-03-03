@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Mapping, Optional, Sequence, Tuple
 
@@ -78,9 +79,12 @@ def install_uv() -> Path:
     raise RuntimeError("uv installation completed but uv binary was not found")
 
 
-def create_runtime_venv(uv_bin: Path, runtime_dir: Path) -> Path:
+def create_runtime_venv(runtime_dir: Path, *, uv_bin: Optional[Path] = None) -> Path:
     venv_dir = runtime_dir / ".venv"
-    _run([str(uv_bin), "venv", str(venv_dir)])
+    if uv_bin:
+        _run([str(uv_bin), "venv", str(venv_dir)])
+    else:
+        _run([sys.executable, "-m", "venv", str(venv_dir)])
 
     python_bin = venv_dir / "bin" / "python"
     if not python_bin.exists():
@@ -89,18 +93,31 @@ def create_runtime_venv(uv_bin: Path, runtime_dir: Path) -> Path:
     return python_bin
 
 
-def install_python_tools(uv_bin: Path, python_bin: Path) -> None:
-    _run(
-        [
-            str(uv_bin),
-            "pip",
-            "install",
-            "--python",
-            str(python_bin),
-            "--upgrade",
-            *PYTHON_TOOLS,
-        ]
-    )
+def install_python_tools_with_uv(
+    uv_bin: Path,
+    *,
+    python_bin: Optional[Path] = None,
+) -> None:
+    command = [str(uv_bin), "pip", "install"]
+    if python_bin:
+        command.extend(["--python", str(python_bin)])
+    else:
+        command.append("--system")
+
+    command.extend(["--upgrade", *PYTHON_TOOLS])
+    _run(command)
+
+
+def install_python_tools_with_pip(*, python_bin: Optional[Path] = None) -> None:
+    command = [
+        str(python_bin or Path(sys.executable)),
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+    ]
+    command.extend(PYTHON_TOOLS)
+    _run(command)
 
 
 def install_system_tools() -> None:
@@ -145,8 +162,23 @@ def install_editor_cli(editor: str, runtime_dir: Path) -> Path:
     return binary_path
 
 
-def setup_python_environment(runtime_dir: Path) -> Tuple[Path, Path]:
-    uv_bin = install_uv()
-    python_bin = create_runtime_venv(uv_bin, runtime_dir)
-    install_python_tools(uv_bin, python_bin)
+def setup_python_environment(
+    runtime_dir: Path,
+    *,
+    use_uv: bool = False,
+    create_venv: bool = False,
+) -> Tuple[Optional[Path], Optional[Path]]:
+    uv_bin: Optional[Path] = install_uv() if use_uv else None
+    python_bin: Optional[Path] = None
+
+    if create_venv:
+        python_bin = create_runtime_venv(runtime_dir, uv_bin=uv_bin)
+
+    if use_uv:
+        if uv_bin is None:
+            raise RuntimeError("uv requested but uv binary was not found")
+        install_python_tools_with_uv(uv_bin=uv_bin, python_bin=python_bin)
+    else:
+        install_python_tools_with_pip(python_bin=python_bin)
+
     return uv_bin, python_bin

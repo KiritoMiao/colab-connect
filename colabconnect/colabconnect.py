@@ -203,6 +203,8 @@ def colabconnect(
     runtime_dir: Union[str, Path] = DEFAULT_RUNTIME_DIR,
     use_mapper: Optional[Iterable[str]] = None,
     extra_mappers: ExtraMappers = None,
+    use_uv: bool = False,
+    create_venv: bool = False,
 ) -> None:
     editor = editor.lower().strip()
     provider = provider.lower().strip()
@@ -228,8 +230,20 @@ def colabconnect(
         extra_mappers=extra_mappers,
     )
 
-    print("Installing uv, creating venv, and installing python tools...")
-    setup_python_environment(runtime_path)
+    if use_uv and create_venv:
+        print("Installing python tools with uv in a runtime virtualenv...")
+    elif use_uv:
+        print("Installing python tools with uv in the current environment...")
+    elif create_venv:
+        print("Creating runtime virtualenv and installing python tools with pip...")
+    else:
+        print("Installing python tools with pip (default, no virtualenv)...")
+
+    setup_python_environment(
+        runtime_path,
+        use_uv=use_uv,
+        create_venv=create_venv,
+    )
     install_system_tools()
 
     print(f"Installing {editor} CLI...")

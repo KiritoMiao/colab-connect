@@ -14,9 +14,15 @@ You can make a copy of this [notebook](https://colab.research.google.com/drive/1
 
 On Google Colab, run these cells:
 
-1) Install `uv`, then install the library:
+1) Install the library:
 ```shell
-!curl -LsSf https://astral.sh/uv/install.sh | sh
+!pip install -U git+https://github.com/KiritoMiao/colab-connect.git
+```
+
+Optional (`uv` install path):
+
+```shell
+!command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
 !uv pip install --system -U git+https://github.com/KiritoMiao/colab-connect.git
 ```
 
@@ -41,6 +47,11 @@ colabconnect(
 
 # Override runtime directory (default: Colab Notebooks/runtime)
 colabconnect(runtime_dir="/content/drive/MyDrive/Colab Notebooks/my-runtime")
+
+# Optional: use uv and/or create runtime virtualenv explicitly
+colabconnect(use_uv=True)
+colabconnect(create_venv=True)
+colabconnect(use_uv=True, create_venv=True)
 ```
 
 ### Mapper presets
@@ -51,7 +62,9 @@ colabconnect(runtime_dir="/content/drive/MyDrive/Colab Notebooks/my-runtime")
 ### Runtime behavior
 - Default runtime directory: `/content/drive/MyDrive/Colab Notebooks/runtime`.
 - A `/colab` symlink is created and points to `runtime_dir`.
-- The connector installs `uv`, creates `runtime_dir/.venv`, and installs Python tools with `uv pip`.
+- By default, the connector installs Python tools with `pip` in the current environment (no virtualenv).
+- Set `create_venv=True` to create `runtime_dir/.venv`.
+- Set `use_uv=True` to use `uv` for Python tool installation.
 - Tunnel auth is checked first (`tunnel user show`) and login is skipped when auth is still valid.
 
 1. After running the code, copy the given code, click the GitHub link and paste the code.
@@ -78,4 +91,3 @@ colabconnect(runtime_dir="/content/drive/MyDrive/Colab Notebooks/my-runtime")
 5. You will be connected to the virtual machine and can access the folders. Open `/colab` (linked to `runtime_dir`) and store your code there for persistence on Google Drive. The workflow is similar to the Remote SSH plugin.
 
 ![image](https://user-images.githubusercontent.com/8587189/232769273-52d3e26a-3aec-436d-9b60-97e1d190ddf7.png)
-
