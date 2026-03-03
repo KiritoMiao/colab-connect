@@ -12,12 +12,15 @@ https://user-images.githubusercontent.com/8587189/232783372-8f2a5f83-1e57-42f0-8
 ## Usage
 You can make a copy of this [notebook](https://colab.research.google.com/drive/1VAlrgB4IpBazkQRrZtSPjeTNR3P27FwQ?usp=sharing) to get started.
 
-On Google Colab, install `uv` and then install the library:
+On Google Colab, run these cells:
+
+1) Install `uv`, then install the library:
 ```shell
 !curl -LsSf https://astral.sh/uv/install.sh | sh
-!~/.local/bin/uv pip install --system -U git+https://github.com/KiritoMiao/colab-connect.git
+!uv pip install --system -U git+https://github.com/KiritoMiao/colab-connect.git
 ```
 
+2) Import and start the connector:
 ```python
 from colabconnect import colabconnect
 
