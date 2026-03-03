@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="colabconnect",
-    version="0.0.8",
+    version="0.0.9",
     license="MIT",
-    description="Connect to Google Colab VM locally from VSCode",
+    description="Connect to Google Colab VM locally from VSCode or Cursor",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     classifiers=[

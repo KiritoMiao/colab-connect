@@ -12,20 +12,44 @@ https://user-images.githubusercontent.com/8587189/232783372-8f2a5f83-1e57-42f0-8
 ## Usage
 You can make a copy of this [notebook](https://colab.research.google.com/drive/1VAlrgB4IpBazkQRrZtSPjeTNR3P27FwQ?usp=sharing) to get started.
 
-On Google Colab, first install the library and then run the code.
+On Google Colab, install `uv` and then install the library:
 ```shell
-!pip install -U git+https://github.com/amitness/colab-connect.git
+!curl -LsSf https://astral.sh/uv/install.sh | sh
+!~/.local/bin/uv pip install --system -U git+https://github.com/amitness/colab-connect.git
 ```
 
 ```python
 from colabconnect import colabconnect
 
-# Default: VS Code
+# Default: VS Code editor + VS Code mapper preset
 colabconnect()
 
-# For Cursor editor
-# colabconnect(editor="cursor")
+# Cursor editor + Cursor mapper preset
+colabconnect(editor="cursor")
+
+# Persist multiple preset configs
+colabconnect(editor="vscode", use_mapper=["vscode", "cursor", "opencode"])
+
+# Add custom persistent mapping: {persistent_subdir: local_path}
+colabconnect(
+    editor="vscode",
+    extra_mappers={"my-tool-cache": "~/.cache/my-tool"},
+)
+
+# Override runtime directory (default: Colab Notebooks/runtime)
+colabconnect(runtime_dir="/content/drive/MyDrive/Colab Notebooks/my-runtime")
 ```
+
+### Mapper presets
+- `use_mapper` supports `"vscode"`, `"cursor"`, and `"opencode"`.
+- If `use_mapper` is not passed, it defaults to `[editor]`.
+- `extra_mappers` accepts a dict or `(name, path)` pairs.
+
+### Runtime behavior
+- Default runtime directory: `/content/drive/MyDrive/Colab Notebooks/runtime`.
+- A `/colab` symlink is created and points to `runtime_dir`.
+- The connector installs `uv`, creates `runtime_dir/.venv`, and installs Python tools with `uv pip`.
+- Tunnel auth is checked first (`tunnel user show`) and login is skipped when auth is still valid.
 
 1. After running the code, copy the given code, click the GitHub link and paste the code.
 <p align="center">
@@ -48,7 +72,7 @@ colabconnect()
 <img width="676" alt="image" src="https://user-images.githubusercontent.com/8587189/232767113-b7acac1c-c236-4dcb-852c-fbe179e3e6ab.png">
 </p>
 
-5. You will be connected to the virtual machine and can access the folders. Open the `/colab` folder and store your code there for persistence on Google Drive. The workflow is similar to the Remote SSH plugin
+5. You will be connected to the virtual machine and can access the folders. Open `/colab` (linked to `runtime_dir`) and store your code there for persistence on Google Drive. The workflow is similar to the Remote SSH plugin.
 
 ![image](https://user-images.githubusercontent.com/8587189/232769273-52d3e26a-3aec-436d-9b60-97e1d190ddf7.png)
 
